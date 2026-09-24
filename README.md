@@ -13,7 +13,7 @@
 
 Safety alignment of large reasoning models often looks strong because refusals get tied to chat templates and sensitive keywords. Strip those cues and the defense drops, benign queries are refused, and general reasoning pays an alignment tax. DeShortcut-Align trains the policy to decide from the query itself.
 
-## Problem
+## ⚠️ Problem
 
 Aligned models lean on two spurious shortcuts. A **formatting shortcut** binds refusal to structural wrappers that show up throughout safety corpora (pre-training and post-training chat templates). A **lexical shortcut** treats a sensitive word as enough reason to refuse, including on benign requests.
 
@@ -23,7 +23,7 @@ The formatting shortcut is easy to measure. The user instruction stays the same;
 
 *Defense success rate with the DeepSeek-R1 post-training template, with the pre-training template, and with the template removed. The gap is the formatting shortcut.*
 
-## Method
+## 🛠️ Method
 
 DeShortcut-Align decouples those shortcuts in three stages.
 
@@ -48,7 +48,7 @@ Training runs on a modified veRL trainer. Defaults in `examples/deshortcut_align
 
 File-level notes are in [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md).
 
-## Training dynamics
+## 📈 Training dynamics
 
 The same four signals, on standard GRPO and on DeShortcut-Align.
 
@@ -61,7 +61,7 @@ The same four signals, on standard GRPO and on DeShortcut-Align.
 
 Standard GRPO falls into three phases. From step 0 to 40 the reward climbs, over-refusal rises with it, and the template gap opens to about 45: the update locks onto the superficial map from chat template to a safe response. From step 40 to 100 that gap narrows and the reward sits near saturation, but over-refusal keeps climbing toward 0.74, so the shortcut has moved from format to sensitive words. Past step 100 the reward is pinned at 1.0. Within-group reward variance collapses, and by step 100 the policy-gradient magnitude is about 95% below its early peak, which is gradient starvation: later steps have almost nothing left to move the policy off the shortcut. DeShortcut-Align takes a different path. Suppressing lexical shortcuts first pushes the template gap to about 65. Once counterfactual consistency is on, attention blinding brings that gap 42.9% under the standard-GRPO baseline, and the contrastive benign queries cut over-refusal by 58.3%. The reward stays around 0.85–0.95 instead of saturating at 1.0, and about 87% of the gradient RMS remains, so the optimizer still has a signal to refine the policy.
 
-## Main results
+## 📊 Main results
 
 Template robustness, over-refusal, and reasoning on DeepSeek-R1-Distill 7B/14B and Qwen3-4B. Robustness is **with template / without template** (gap underneath). Best and second-best exclude the base model. Shaded rows are DeShortcut-Align.
 
@@ -69,7 +69,7 @@ Template robustness, over-refusal, and reasoning on DeepSeek-R1-Distill 7B/14B a
 
 Relative to standard GRPO, DeShortcut-Align cuts the template gap by about 44% (7B), 68% (14B), and 60% (Qwen3-4B), and cuts average false rejection by about 58%, 52%, and 45%. Reasoning (`Avg2`) is retained rather than taxed: about +2.0, +2.6, and +0.7 points versus standard GRPO. On the 7B jailbreak suite (PAIR, GCG, TAP) the RL variant reaches 97.7 average defense success.
 
-## Getting started
+## 🚀 Getting started
 
 Python 3.10+ and NVIDIA GPUs (FSDP + vLLM).
 
@@ -86,7 +86,7 @@ cp .env.example .env
 
 More install notes are in [environment/README.md](environment/README.md).
 
-## Data
+## 📁 Data
 
 | Directory | Role |
 |-----------|------|
@@ -117,7 +117,7 @@ python scripts/agca/generate_responses.py \
 
 `datasets/raw/agca_benign_rl.json` and `agca_benign_sft.json` are ready to train on. See [datasets/README.md](datasets/README.md).
 
-## Training
+## 🎯 Training
 
 The launchers default to `MODEL_PRESET=ds-7b` (DeepSeek-R1-Distill-Qwen-7B). DeepSeek presets use the R1-Distill chat markers as formatting tokens. `ds-14b` and `qwen3-4b` are optional overrides; the Qwen3-4B preset turns thinking on and blinds `<|im_start|>`, `<|im_end|>`, `user`, and `assistant`. RL formatting tokens are auto-detected when `algorithm.ccr.fmt_tokens` is left unset.
 
@@ -153,11 +153,11 @@ CCR_ENABLE=false MODEL_PRESET=ds-7b bash examples/deshortcut_align/run_grpo.sh
 
 SFT uses learning rate `1e-5` for 5 epochs and `alpha=1`. GRPO and PPO use learning rate `5e-6`. PPO gates CCR with `gamma=0.8`.
 
-## Evaluation
+## 🔬 Evaluation
 
 Safety, template robustness, and over-refusal use [LLM-Safety-Eval](https://github.com/neuqrui/LLM-Safety-Eval): WildJailbreak, StrongReject, WildChat, XSTest, OKTest, FalseReject, and the PAIR / GCG / TAP attacks. General capabilities (MATH-500, MMLU, LiveCodeBench, HumanEval) use [OpenCompass](https://github.com/open-compass/opencompass).
 
-## Citation
+## 📄 Citation
 
 ```bibtex
 @misc{deshortcut-align2026,
@@ -169,6 +169,6 @@ Safety, template robustness, and over-refusal use [LLM-Safety-Eval](https://gith
 
 Please also cite veRL.
 
-## License
+## ⚖️ License
 
 This repository is released under the Apache License 2.0. It includes a modified copy of veRL. See `verl/LICENSE`.
