@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280">
+  <rect width="1200" height="280" fill="#f7f6f2"/>
+  <rect x="16" y="16" width="1168" height="248" fill="none" stroke="#8a7040" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="600" y="120" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#3d3424">Training dynamics</text>
+  <text x="600" y="165" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#6b5e48">Replace with the paper curves for reward, over-refusal, template gap, and PG loss</text>
+  <text x="600" y="200" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#6b5e48">assets/training_dynamics.svg</text>
+</svg>

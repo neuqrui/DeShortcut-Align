@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280">
+  <rect width="1200" height="280" fill="#f4f1fb"/>
+  <rect x="16" y="16" width="1168" height="248" fill="none" stroke="#6b5b95" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="600" y="120" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#2c2440">DeShortcut-Align overview</text>
+  <text x="600" y="165" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#5c5470">Replace with the paper figure (pipeline: TSS, AGCA, CCR)</text>
+  <text x="600" y="200" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#5c5470">assets/overview.svg</text>
+</svg>
