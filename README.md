@@ -11,17 +11,19 @@
   <a href="#training">💻 Code</a>
 </p>
 
-Safety alignment of large reasoning models often looks strong because refusals get tied to chat templates and sensitive keywords. Strip those cues and the defense drops, benign queries are refused, and general reasoning pays an alignment tax. DeShortcut-Align trains the policy to decide from the query itself.
+Safety alignment of large reasoning models via SFT and RL can make refusal look near-perfect on most harmful queries. We find that this behavior often comes from **shortcut learning** during alignment rather than robust, intent-sensitive safety evaluation. Empirically, two dominant shortcuts drive refusal: a **formatting shortcut** and a **lexical shortcut**. We propose **DeShortcut-Align**, a shortcut-decoupling framework that reduces reliance on both cues during training, so safety alignment becomes more robust and the policy can keep learning instead of collapsing onto superficial heuristics.
 
 ## ⚠️ Problem
 
-Aligned models lean on two spurious shortcuts. A **formatting shortcut** binds refusal to structural wrappers that show up throughout safety corpora (pre-training and post-training chat templates). A **lexical shortcut** treats a sensitive word as enough reason to refuse, including on benign requests.
+We identify two spurious shortcuts that explain the gap between high safety scores and fragile real-world behavior.
 
-The formatting shortcut is easy to measure. The user instruction stays the same; only the template is removed. Defense success still falls on WildJailbreak, StrongReject, and WildChat, for the base model and for standard alignment methods (TARS, SFT, STAR-1, PPO, GRPO).
+**Formatting shortcut.** Refusal is overly bound to structural wrappers that are ubiquitous in safety corpora (pre-training and post-training chat templates). Holding the user instruction fixed and only stripping the template causes defense success to drop on WildJailbreak, StrongReject, and WildChat—for the base model and for standard alignment methods (TARS, SFT, STAR-1, PPO, GRPO). The gap below is the formatting shortcut.
 
 ![Template vulnerability. Defense success with the post-training template, the pre-training template, and no template.](assets/problem_bar.png)
 
-*Defense success rate with the DeepSeek-R1 post-training template, with the pre-training template, and with the template removed. The gap is the formatting shortcut.*
+*Defense success rate with the DeepSeek-R1 post-training template, with the pre-training template, and with the template removed.*
+
+**Lexical shortcut.** Sensitive keywords are treated as sufficient evidence to refuse, even when the underlying intent is benign. This shows up as severe over-refusal on harmless requests and an alignment tax on general reasoning.
 
 ## 🛠️ Method
 
@@ -76,15 +78,18 @@ Python 3.10+ and NVIDIA GPUs (FSDP + vLLM).
 ```bash
 conda create -n deshortcut python=3.10 -y
 conda activate deshortcut
-pip install -r environment/requirements.txt
-pip install -e verl/
-pip install google-genai
+export PYTHONNOUSERSITE=1
+export PATH="$CONDA_PREFIX/bin:$PATH"
+python -m pip install -r environment/requirements.txt
+python -m pip install -e verl/
+python -m pip install google-genai
+# flash-attn: see environment/README.md (prebuilt wheel recommended if nvcc is missing)
 
 cp .env.example .env
 # Set OPENAI_API_KEY if you use the RL reward judge or AGCA synthesis.
 ```
 
-More install notes are in [environment/README.md](environment/README.md).
+Install pitfalls (user-site `pip`, flash-attn wheels, torch 2.4 vs veRL APIs, API keys) are documented in [`environment/requirements.txt`](environment/requirements.txt) (header comments) and [`environment/README.md`](environment/README.md).
 
 ## 📁 Data
 

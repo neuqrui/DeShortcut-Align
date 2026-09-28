@@ -44,10 +44,14 @@ if version.parse(torch.__version__) >= version.parse("2.6"):
     fully_shard_module = torch.distributed.fsdp._fully_shard._fully_shard
 elif version.parse(torch.__version__) >= version.parse("2.4"):
     from torch.distributed._composable.fsdp import CPUOffloadPolicy, FSDPModule, MixedPrecisionPolicy, fully_shard
+    # torch 2.4 keeps DTensor under _tensor; type hints below still reference these names.
+    from torch.distributed._tensor import DTensor, Shard
+    from torch.distributed._tensor.placement_types import DTensorSpec
 
     fully_shard_module = torch.distributed._composable.fsdp
 else:
     fully_shard, MixedPrecisionPolicy, FSDPModule, CPUOffloadPolicy, fully_shard_module = None, None, None, None, None
+    DTensor = Shard = DTensorSpec = None  # type: ignore[misc, assignment]
 
 
 def init_fn(x: torch.nn.Module):

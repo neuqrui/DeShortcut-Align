@@ -1,13 +1,56 @@
 # DeShortcut-Align training environment (Python 3.10, CUDA 12.1 recommended)
-# Usage:
-#   conda create -n deshortcut python=3.10 -y && conda activate deshortcut
-#   pip install -r environment/requirements.txt
-#   pip install -e verl/
 #
-# Notes:
-# - Install torch/torchvision from the CUDA wheel index first if the default CPU build is picked.
-# - flash-attn often needs a matching wheel or: pip install flash-attn --no-build-isolation
-# - Optional pin file: requirements-verl-freeze.clean.txt
+# Usage (recommended):
+#   conda create -n deshortcut python=3.10 -y
+#   conda activate deshortcut
+#   export PYTHONNOUSERSITE=1                    # avoid ~/.local shadowing the env
+#   export PATH="$CONDA_PREFIX/bin:$PATH"        # prefer env torchrun / pip
+#   python -m pip install -r environment/requirements.txt
+#   python -m pip install -e verl/
+#   python -m pip install google-genai
+#   # flash-attn: see notes below (install after torch)
+#
+# Optional full pin dump: requirements-verl-freeze.clean.txt
+# More install / debug notes: environment/README.md
+#
+# ---------------------------------------------------------------------------
+# Known install pitfalls (validated on a fresh setup)
+# ---------------------------------------------------------------------------
+# 1) Always use `python -m pip` inside the conda env.
+#    Bare `pip` may resolve to ~/.local/bin/pip and install into user site.
+#    Then `PYTHONNOUSERSITE=1` makes torch/vllm "disappear". Fix:
+#      export PYTHONNOUSERSITE=1
+#      export PATH="$CONDA_PREFIX/bin:$PATH"
+#      python -m pip install -r environment/requirements.txt
+#
+# 2) Prefer CUDA wheels. If pip picks a CPU torch build, reinstall from the
+#    cu121 index explicitly (this file already sets --extra-index-url).
+#
+# 3) flash-attn is NOT installed by this file. After torch is in place:
+#      # Option A (needs nvcc + CUDA_HOME matching the torch CUDA):
+#      python -m pip install flash-attn==2.7.3 --no-build-isolation
+#      # Option B (recommended if nvcc/CUDA_HOME is missing): prebuilt wheel
+#      # matching torch 2.4 + cu12 + cp310 + cxx11abiFALSE, e.g.
+#      # https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.3/flash_attn-2.7.3+cu12torch2.4cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+#      python -m pip install /path/to/flash_attn-....whl
+#    GRPO/PPO set VLLM_ATTENTION_BACKEND=FLASH_ATTN, so flash-attn is required
+#    for the paper RL recipe (not only an optional speedup).
+#
+# 4) Torch pin vs. veRL API surface.
+#    This stack pins torch==2.4.0 (matches vLLM 0.6.3). Upstream veRL snippets
+#    often assume torch>=2.5 DTensor import paths
+#    (`from torch.distributed.tensor import DTensor`) and NestedTensor `.sum()`.
+#    On 2.4 use `torch.distributed._tensor` and `nested.values().sum()` where
+#    needed. Prefer staying on this pin unless you also upgrade vLLM.
+#
+# 5) RL reward judge / AGCA synthesis need an OpenAI-compatible API:
+#      cp .env.example .env   # set OPENAI_API_KEY (and optional OPENAI_BASE_URL)
+#    SFT+CCR can run without the judge. SwanLab is optional; override logger to
+#    console-only if you are not logged in.
+#
+# 6) Hugging Face downloads: set HF_ENDPOINT (e.g. https://hf-mirror.com) in
+#    .env when the default Hub is unreachable. Prefer a local MODEL_PATH.
+# ---------------------------------------------------------------------------
 
 # --- core deep learning (torch 2.4.0 + cu121) ---
 --extra-index-url https://download.pytorch.org/whl/cu121
@@ -47,5 +90,5 @@ swanlab==0.7.6
 openai>=1.0.0
 omegaconf==2.3.0
 
-# flash-attn: install separately after torch (often needs a matching wheel)
-#   pip install flash-attn==2.7.3 --no-build-isolation
+# flash-attn: install separately after torch (see notes above)
+#   python -m pip install flash-attn==2.7.3 --no-build-isolation

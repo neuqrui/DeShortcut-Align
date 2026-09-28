@@ -28,7 +28,12 @@ from peft import LoraConfig, TaskType, get_peft_model
 from tensordict import TensorDict
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 from torch.distributed.fsdp.api import FullStateDictConfig, ShardedStateDictConfig, StateDictType
-from torch.distributed.tensor import DTensor
+try:
+    # torch 2.5+
+    from torch.distributed.tensor import DTensor
+except ImportError:
+    # torch 2.4 (README pin) keeps DTensor under _tensor
+    from torch.distributed._tensor import DTensor
 
 import verl.utils.torch_functional as verl_F
 from verl.models.transformers.monkey_patch import apply_monkey_patch
@@ -593,7 +598,12 @@ class FSDPEngine(BaseEngine):
         tu.assign_non_tensor(data, sp_size=self.ulysses_sequence_parallel_size)
 
         # compute num_tokens in global batch for loss normalization
-        batch_num_tokens = data["loss_mask"].sum().to(get_device_id())
+        # torch 2.4 NestedTensor does not implement aten.sum.default; use values().
+        loss_mask = data["loss_mask"]
+        if getattr(loss_mask, "is_nested", False):
+            batch_num_tokens = loss_mask.values().sum().to(get_device_id())
+        else:
+            batch_num_tokens = loss_mask.sum().to(get_device_id())
         torch.distributed.all_reduce(
             batch_num_tokens, op=torch.distributed.ReduceOp.SUM, group=self.get_data_parallel_group()
         )

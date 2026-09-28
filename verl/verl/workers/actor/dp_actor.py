@@ -23,7 +23,12 @@ import os
 import torch
 from torch import nn
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
-from torch.distributed.tensor import DTensor
+try:
+    # torch 2.5+
+    from torch.distributed.tensor import DTensor
+except ImportError:
+    # torch 2.4 (README pin) keeps DTensor under _tensor
+    from torch.distributed._tensor import DTensor
 
 import verl.utils.torch_functional as verl_F
 from verl import DataProto
