@@ -6,9 +6,19 @@
 <p align="center"><b>Decoupling Spurious Shortcuts for Robust Safety Alignment in Large Reasoning Models</b></p>
 
 <p align="center">
-  <a href="#citation">📄 Paper</a>
+  <a href="https://arxiv.org/abs/2609.34896"><img src="https://img.shields.io/badge/arXiv-2609.34896-b31b1b.svg" alt="arXiv"></a>
+  &nbsp;
+  <a href="https://arxiv.org/pdf/2609.34896"><img src="https://img.shields.io/badge/PDF-Paper-green.svg" alt="PDF"></a>
+</p>
+
+<p align="center">
+  <a href="https://arxiv.org/abs/2609.34896">📄 Paper</a>
   &nbsp;&middot;&nbsp;
   <a href="#training">💻 Code</a>
+</p>
+
+<p align="center">
+  Qirui Liu, Yichen Sun, Yan Wang, Zhixuan Chu, Linbo Jiang, Jianan Lin, Kui Ren
 </p>
 
 Safety alignment of large reasoning models via SFT and RL can make refusal look near-perfect on most harmful queries. We find that this behavior often comes from **shortcut learning** during alignment rather than robust, intent-sensitive safety evaluation. Empirically, two dominant shortcuts drive refusal: a **formatting shortcut** and a **lexical shortcut**. We propose **DeShortcut-Align**, a shortcut-decoupling framework that reduces reliance on both cues during training, so safety alignment becomes more robust and the policy can keep learning instead of collapsing onto superficial heuristics.
@@ -164,11 +174,17 @@ Safety, template robustness, and over-refusal use [LLM-Safety-Eval](https://gith
 
 ## 📄 Citation
 
+If you find this work useful, please cite our paper:
+
 ```bibtex
-@misc{deshortcut-align2026,
-  title  = {DeShortcut-Align: Decoupling Spurious Shortcuts for Robust Safety Alignment in Large Reasoning Models},
-  author = {},
-  year   = {2026}
+@misc{liu2026deshortcutaligndecouplingspuriousshortcuts,
+      title={DeShortcut-Align: Decoupling Spurious Shortcuts for Robust Safety Alignment in Large Reasoning Models}, 
+      author={Qirui Liu and Yichen Sun and Yan Wang and Zhixuan Chu and Linbo Jiang and Jianan Lin and Kui Ren},
+      year={2026},
+      eprint={2609.34896},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2609.34896}, 
 }
 ```
 
