@@ -188,8 +188,6 @@ If you find this work useful, please cite our paper:
 }
 ```
 
-Please also cite veRL.
-
 ## ⚖️ License
 
 This repository is released under the Apache License 2.0. It includes a modified copy of veRL. See `verl/LICENSE`.
