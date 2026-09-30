@@ -17,10 +17,6 @@
   <a href="#training">💻 Code</a>
 </p>
 
-<p align="center">
-  Qirui Liu, Yichen Sun, Yan Wang, Zhixuan Chu, Linbo Jiang, Jianan Lin, Kui Ren
-</p>
-
 Safety alignment of large reasoning models via SFT and RL can make refusal look near-perfect on most harmful queries. We find that this behavior often comes from **shortcut learning** during alignment rather than robust, intent-sensitive safety evaluation. Empirically, two dominant shortcuts drive refusal: a **formatting shortcut** and a **lexical shortcut**. We propose **DeShortcut-Align**, a shortcut-decoupling framework that reduces reliance on both cues during training, so safety alignment becomes more robust and the policy can keep learning instead of collapsing onto superficial heuristics.
 
 ## ⚠️ Problem
